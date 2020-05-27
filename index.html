@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/index.css">
+  <title>Snake</title>
+</head>
+<body>
+  <div class="flex row">
+    <svg id="main"></svg>
+    <div class="flex col">
+      <div id="score">
+        <h1>Score board</h1>
+        <div class="flex col flex-start">
+          <div class="tag">Score: <span class="value">0</span></div>
+          <div class="tag">Max Score: <span class="value">0</span></div>
+          <div class="tag">Special Collected: <span class="value">0</span></div>
+        </div>
+        <img id="snake-logo" class="shake-bottom" src="assets/images/snake.svg" alt="snake">
+      </div>
+      <div id="menu">
+        <h1>Menu</h1>
+        <div class="flex col">
+          <button>Start (S)</button>
+          <button>Play/Pause (Space bar)</button>
+          <button>Options (P)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="assets/js/howler.js"></script>
+  <script src="assets/js/index.js"></script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+/*
+Primary   font   font-family: 'Bungee Shade', cursive;
+Secondary font   font-family: 'Press Start 2P', cursive;
+*/
+
+html, body{
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+  color: chartreuse;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+h1{
+  text-align: center;
+  font-family: 'Bungee Shade', cursive;
+  font-size: 4vh;
+}
+
+button{
+  width: 95%;
+  height: 5vh;
+  margin: 1vh;
+  cursor: pointer;
+  background-color: transparent;
+  border: 3px solid chartreuse;
+  color: chartreuse;
+  font-family: 'Press Start 2P', cursive;
+}
+
+button:hover{
+  background-color: rgba(128, 255, 0, 0.465);
+  color: white
+}
+
+#main{
+  border: 2px solid chartreuse;
+  width: 75vw;
+  height: 98vh;
+  margin: 0.5vw 0.5vw;
+}
+
+#score{
+  border: 2px solid chartreuse;
+  width: 25vw;
+  height: 58.5vh;
+  margin-bottom: 1vh;
+}
+
+#snake-logo{
+  max-width: 13.5vh;
+  display:block;
+  margin:auto;
+}
+
+#menu{
+  border: 2px solid chartreuse;
+  width: 25vw;
+  height: 38vh;
+}
+
+.flex{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.flex-start{
+  align-items: flex-start !important;
+}
+
+.col{
+  flex-direction: column;
+}
+
+.row{
+  flex-direction: row;
+}
+
+.tag{
+  margin: 1.5vw;
+  font-size: 2vh;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.value{
+  color: #eee;
+}
+
+
+.shake-bottom{
+  -webkit-animation: shake-bottom 1s cubic-bezier(0.455, 0.030, 0.515, 0.955) infinite both;
+          animation: shake-bottom 1s cubic-bezier(0.455, 0.030, 0.515, 0.955) infinite both;
+}
+
+/*Animation*/
+
+/*Shake*/
+@-webkit-keyframes shake-bottom {
+  0%,
+  100% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+    -webkit-transform-origin: 50% 100%;
+            transform-origin: 50% 100%;
+  }
+  10% {
+    -webkit-transform: rotate(2deg);
+            transform: rotate(2deg);
+  }
+  20%,
+  40%,
+  60% {
+    -webkit-transform: rotate(-4deg);
+            transform: rotate(-4deg);
+  }
+  30%,
+  50%,
+  70% {
+    -webkit-transform: rotate(4deg);
+            transform: rotate(4deg);
+  }
+  80% {
+    -webkit-transform: rotate(-2deg);
+            transform: rotate(-2deg);
+  }
+  90% {
+    -webkit-transform: rotate(2deg);
+            transform: rotate(2deg);
+  }
+}
+
+@keyframes shake-bottom {
+  0%,
+  100% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+    -webkit-transform-origin: 50% 100%;
+            transform-origin: 50% 100%;
+  }
+  10% {
+    -webkit-transform: rotate(2deg);
+            transform: rotate(2deg);
+  }
+  20%,
+  40%,
+  60% {
+    -webkit-transform: rotate(-4deg);
+            transform: rotate(-4deg);
+  }
+  30%,
+  50%,
+  70% {
+    -webkit-transform: rotate(4deg);
+            transform: rotate(4deg);
+  }
+  80% {
+    -webkit-transform: rotate(-2deg);
+            transform: rotate(-2deg);
+  }
+  90% {
+    -webkit-transform: rotate(2deg);
+            transform: rotate(2deg);
+  }
+}
