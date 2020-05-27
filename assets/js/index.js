@@ -8,7 +8,7 @@ window.onload = () => {
   document.querySelectorAll('button').forEach(btn => {
     btn.addEventListener('mouseover', () => {
       new Howl({
-        src: ['../sounds/hover.mp3']
+        src: ['assets/sounds/hover.mp3']
       }).play()
     })
   })

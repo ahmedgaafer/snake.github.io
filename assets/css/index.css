@@ -16,7 +16,7 @@ html, body{
 h1{
   text-align: center;
   font-family: 'Bungee Shade', cursive;
-  font-size: 4vh;
+  font-size: 2vw;
 }
 
 button{
@@ -28,6 +28,7 @@ button{
   border: 3px solid chartreuse;
   color: chartreuse;
   font-family: 'Press Start 2P', cursive;
+  font-size: 1vw;
 }
 
 button:hover{
@@ -50,7 +51,7 @@ button:hover{
 }
 
 #snake-logo{
-  max-width: 13.5vh;
+  max-width: 7vw;
   display:block;
   margin:auto;
 }
@@ -81,7 +82,7 @@ button:hover{
 
 .tag{
   margin: 1.5vw;
-  font-size: 2vh;
+  font-size: 1vw;
   font-family: 'Press Start 2P', cursive;
 }
 
