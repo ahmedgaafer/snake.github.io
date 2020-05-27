@@ -36,9 +36,10 @@
   <script>
     document.querySelectorAll('button').forEach(btn => {
     btn.addEventListener('mouseover', () => {
-      new Howl({
-        src: ['./assets/sounds/hover.mp3']
-      }).play()
+     const hoverSound =  new Howl({
+        src: ['assets/sounds/hover.mp3']
+      });
+     hoverSound.play(); 
     })
   })
   </script>
