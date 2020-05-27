@@ -35,13 +35,13 @@
   <script src="assets/js/index.js"></script>
   <script>
     document.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('mouseover', () => {
-     const hoverSound =  new Howl({
-        src: ['assets/sounds/hover.mp3']
-      });
-     hoverSound.play(); 
+      btn.addEventListener('click', () => {
+      const hoverSound =  new Howl({
+          src: ['assets/sounds/hover.mp3']
+        });
+      hoverSound.play(); 
+      })
     })
-  })
   </script>
 </body>
 </html>
