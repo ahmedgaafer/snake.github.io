@@ -90,6 +90,19 @@ button:hover{
   color: #eee;
 }
 
+.options-menu{
+  position: relative;
+  bottom: 80vh;
+  left: 18vw;
+  border: 3px solid chartreuse;
+  background-color: black;
+  width: 40vw;
+  height: 50vh;
+}
+
+.hidden{
+  display: none;
+}
 
 .shake-bottom{
   -webkit-animation: shake-bottom 1s cubic-bezier(0.455, 0.030, 0.515, 0.955) infinite both;

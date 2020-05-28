@@ -24,12 +24,21 @@
       <div id="menu">
         <h1>Menu</h1>
         <div class="flex col">
-          <button>Start (S)</button>
-          <button>Play/Pause (Space bar)</button>
-          <button>Options (P)</button>
+          <button id="reset">Start (Enter)</button>
+          <button id="toggle">Play/Pause (Space bar)</button>
+          <button id="options">Options (P)</button>
         </div>
       </div>
     </div>
+  </div>
+  <div class="flex col options-menu hidden">
+    <h1>Options</h1>
+    <div class="flex col flex-start">
+      <div class="tag">Directions: <span class="value">↑ ↓ ← →   Or  WASD</span></div>
+      <div class="tag">Increase Speed: <span class="value">+</span></div>
+      <div class="tag">Decrease Speed: <span class="value">-</span></div>
+    </div>
+    <button id="close-options-menu">Exit</button> 
   </div>
   <script src="assets/js/howler.js"></script>
   <script src="assets/js/index.js"></script>
