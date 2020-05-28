@@ -84,6 +84,7 @@ let interval;
 const displayOptions = () => {
   /* Call pasue/play  to pause */
   
+  
   document.querySelector('.options-menu').classList.toggle('hidden')
 }
 
