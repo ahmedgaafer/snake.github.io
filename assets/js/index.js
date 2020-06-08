@@ -5,13 +5,10 @@ window.onload = () => {
     document.getElementById('snake-logo').classList.toggle('shake-bottom')
   }, 3000)
 
-  // #region Key Press Handler 
+  // #region d Press Handler 
   window.addEventListener('keydown', async e => {
 
     switch (e.code){
-      case 'KeyQ':
-        addPoint(points[points.length - 1][0] - size, points[points.length - 1][1], true);
-        break;
       case 'NumpadAdd':
         if (speed >= 1) speed -= 0.5
         else alert("Speed can't go higher than that")
@@ -32,33 +29,32 @@ window.onload = () => {
         toggleGameState();
         break;
       case 'KeyW':
-        changeDirection('w');
+        if(d !== 's') changeDirection('w');
+        new Howl({
+          src: ['../sounds/up.mp3']
+        }).play();
         break;
       case 'KeyS':
-        changeDirection('s');
+        if(d !== 'w') changeDirection('s');
         break;
       case 'KeyD':
-        changeDirection('d');
+        if(d !== 'a') changeDirection('d');
         break;
       case 'KeyA':
-        changeDirection('a');
+        if(d !== 'd') changeDirection('a');
         break;
       case 'ArrowUp':
-        changeDirection('w');
+        if(d !== 's') changeDirection('w');
         break;
       case 'ArrowDown':
-        changeDirection('s');
+        if(d !== 'w') changeDirection('s');
         break;
       case 'ArrowRight':
-        changeDirection('d');
+        if(d !== 'a') changeDirection('d');
         break;
       case 'ArrowLeft':
-        changeDirection('a');
+        if(d !== 'd') changeDirection('a');
         break;
-      
-      
-
-
       default:
         console.log(e.code);
         break;
@@ -68,32 +64,35 @@ window.onload = () => {
   //#endregion
 }
 
-
-
 const exitOptionsMenu = document.getElementById('close-options-menu');
 const reset           = document.getElementById('reset');
 const toggle          = document.getElementById('toggle');
 const options         = document.getElementById('options');
-const board           = document.getElementById('main');
-const svgns           = "http://www.w3.org/2000/svg";
-
+const main            = document.getElementById('main');
+const cvs             = document.getElementById('cvs');
+const ctx             = cvs.getContext('2d');
 
 // #region Initial Game Settings
 
 let orientation = 'x';
 let parts       = 10;
 let speed       = 1.5;
-let posX        = board.clientWidth / 2;
-let posY        = board.clientHeight / 2;
-let size        = 0.02 * board.clientWidth;
-let points      = [];
-let key         = 'd';
+let cvsWidth    = cvs.getBoundingClientRect().width;
+let cvsHeight   = cvs.getBoundingClientRect().height;
+let posX        = cvsWidth / 2;
+let posY        = cvsHeight / 2;
+let size        = (cvsWidth < 700)? 0.2 * cvsWidth : 0.02 * cvsWidth;
+let snake       = [];
+let d         = 'd';
 let xChange     = 10;
 let yChange     = 0;
 let started     = false;
+let food        = [Math.random()*cvsWidth*0.8 , Math.random()*cvsHeight*0.8]
+let score       = 0;
+let maxScore    = localStorage.getItem('maxScore') || 0;
 let interval;
-let food        =[Math.random()*board.clientWidth + 10 , Math.random()*board.clientHeight + 10]
-
+snake.push([posX, posY])
+document.getElementById('max-score').innerText = maxScore;
 //#endregion
 
 // #region  Helper Functions 
@@ -106,30 +105,41 @@ const displayOptions = () => {
 }
 
 const resetGame = () => {
-   orientation = 'x';
-   parts       = 10;
-   posX        = board.clientWidth / 2;
-   posY        = board.clientHeight / 2;
-   size        = 0.02 * board.clientWidth;
-   points      = [];
-   key         = 'd';
-   xChange     = 10;
-   yChange     = 0;
-   started     = false;
-   food        = [Math.random()*board.clientWidth + 10 , Math.random()*board.clientHeight + 10]
-   clearInterval(interval);
-   const DOM = document.getElementById('main');
-   while(DOM.firstChild)DOM.removeChild(DOM.firstChild)
-   setup()
-
+  if(started){
+    orientation = 'x';
+    parts       = 10;
+    speed       = 1.5;
+    snake       = [];
+    score       = 0;
+    d         = 'd';
+    xChange     = 10;
+    yChange     = 0;
+    started     = false;
+    food        = [Math.random()*cvsWidth*0.8 , Math.random()*cvsHeight*0.8]
+    snake.push([posX, posY])
+    clearInterval(interval);
+    draw()
+  }
 }
+
+//FIX BLURRY CANVAS ISSUE
+let dpi = window.devicePixelRatio;
+function fix_dpi() {
+  let style_height = +getComputedStyle(cvs).getPropertyValue("height").slice(0, -2);
+  let style_width = +getComputedStyle(cvs).getPropertyValue("width").slice(0, -2);
+
+  cvs.setAttribute('height', style_height * dpi);
+  cvs.setAttribute('width', style_width * dpi);
+}
+
+
 //#endregion
 
 // #region Collision Handling 
 
 const eatSelf = point =>{
- for(let i = 1; i < points.length; i++){
-  if((point[0] == points[i][0] && point[1] == points[i][1] )){
+ for(let i = 1; i < snake.length; i++){
+  if((point[0] == snake[i][0] && point[1] == snake[i][1] )){
     return true
   }
  }
@@ -138,10 +148,10 @@ const eatSelf = point =>{
 
 const hitWall = point => {
   if(
-    point[0] >= board.clientWidth - 10 ||
-    point[1] >= board.clientHeight - 10 || 
-    point[0] < -10 || 
-    point[1] < -10
+    point[0] >= cvsWidth + 10  ||
+    point[1] >= cvsHeight + 10|| 
+    point[0] < -30 || 
+    point[1] < -20
   ){
     return true
   }
@@ -150,135 +160,93 @@ const hitWall = point => {
 }
 
 const eatFood = point => {  
-  const margin = 10
-  return ( (Math.abs(point[0] - food[0] < margin)) && (Math.abs(point[1] - food[1] < margin)) )
+  const dist = Math.sqrt(Math.pow(point[0] - food[0], 2) + Math.pow(point[1] - food[1], 2))
+  return ( dist <= 25 )
 }
 
-const checkState =async newPoint =>{
+const checkState =async newPoint => {
   if(hitWall(newPoint) || eatSelf(newPoint)){
     clearInterval(interval)
     alert('You Lost')
-    let score = Number(document.getElementById('normal-score').innerText)
-    if(localStorage.getItem('snake-score-max') && localStorage.getItem('snake-score-max') < score){
-      localStorage.setItem('snake-score-max', score)
-      document.getElementById('max-score').innerText = score;
-    }
     document.getElementById('normal-score').innerText = 0
+    if(score > maxScore){
+      localStorage.setItem('maxScore', score);
+    }
   }
   if(eatFood(newPoint)){
-    document.getElementById('food').remove()
-    food =[Math.random()*board.clientWidth + 10 , Math.random()*board.clientHeight + 10]
-    let foodDOM = document.createElementNS(svgns, 'rect');
-      foodDOM.setAttribute('x', food[0]);
-      foodDOM.setAttribute('y', food[1]);
-      foodDOM.setAttribute('height', `${size}`);
-      foodDOM.setAttribute('width', `${size}`);
-      foodDOM.style.fill="crimson"
-      foodDOM.setAttribute('id', 'food')
-    board.appendChild(foodDOM)
-    addPoint(points[points.length-1][0], points[points.length-1][1], true)
-    document.getElementById('normal-score').innerText = Number(document.getElementById('normal-score').innerText) + 1
-    console.log(document.getElementById('normal-score').innerText)
+    score++;
+    if(score > maxScore){
+      document.getElementById('max-score').innerText = score;
+    }
+    food = [Math.random()*cvsWidth*0.8 , Math.random()*cvsHeight*0.8]
+    document.getElementById('normal-score').innerText = score;
+    console.log(score)
+  }
+  else{
+    snake.pop();
   }
 }
 
 //#endregion
 
 // #region Movment Handler
-const move = async key => {
-  const dist = 13
-  if(orientation === 'x'){
-    if(key === 'w'){
-      orientation = 'y'
-      xChange = 0;
-      yChange = -dist;
-    }
-    if(key === 's'){
-      orientation = 'y'
-      xChange = 0;
-      yChange = dist;
-    }
-  }
-  else{
-    if(key === 'a'){
-      orientation = 'x'
-      xChange = -dist;
-      yChange = 0;
-    }
-    if(key === 'd'){
-      orientation = 'x'
-      xChange = dist;
-      yChange = 0;
-    }
-  }
 
-  const newPoint = [points[0][0] + xChange, points[0][1] + yChange]
-  checkState(newPoint)
-
-  const DOM = document.getElementById('main');
- 
-
-  /* Add box to the head */
-  addPoint(newPoint[0], newPoint[1]) 
-  
-  /* Remove one box from tail */
-  if(DOM.firstChild.id === 'food'){
-    DOM.appendChild(DOM.firstChild)
-  }
-  points.pop()
-  DOM.removeChild(DOM.firstChild)
-}
-
-const addPoint = (newX, newY, last=false) => {
-  let rect = document.createElementNS(svgns, 'rect');
-        rect.setAttribute('x', newX);
-        rect.setAttribute('y', newY);
-        rect.setAttribute('height', `${size}`);
-        rect.setAttribute('width', `${size}`);
-        rect.style.fill="#7FFF00";
-        (last)?points.push([newX, newY]):points.unshift([newX, newY])       
-    board.appendChild(rect);
-}
-
-const changeDirection = keyParam => {
-  key = keyParam 
+const changeDirection = dParam => {
+  d = dParam 
 }
 
 //#endregion
 
-// #region Main functions
-const setup = () => {
+// #region Main drawing functions
 
-  for(let i = 0 ;i < parts; i++){
-    let rect = document.createElementNS(svgns, 'rect');
-        rect.setAttribute('x', posX - (size * i));
-        rect.setAttribute('y', posY);
-        rect.setAttribute('height', `${size}`);
-        rect.setAttribute('width', `${size}`);
-        rect.setAttribute('id', `block${i}`)
-        rect.style.fill="#7FFF00"
-        points.push([posX - (size * i), posY])       
-    board.appendChild(rect)
+const drawSnake = () => {
+  for(let i = 0 ;i < snake.length; i++){
+    let x = snake[i][0]
+    let y = snake[i][1];
+
+    ctx.strokeStyle = (i === 0)? 'white':'green';
+    ctx.lineWidth = 3;
+    ctx.fillStyle = "chartreuse";
+    ctx.strokeRect(x, y, size, size);
+    ctx.fillRect(x, y, size, size);
   }
-  let foodDOM = document.createElementNS(svgns, 'rect');
-      foodDOM.setAttribute('x', food[0]);
-      foodDOM.setAttribute('y', food[1]);
-      foodDOM.setAttribute('height', `${size}`);
-      foodDOM.setAttribute('width', `${size}`);
-      foodDOM.style.fill="crimson"
-      foodDOM.setAttribute('id', 'food')
-  board.appendChild(foodDOM)
+}
+
+const drawFood = () => {
+  ctx.strokeStyle = "pink";
+  ctx.lineWidth = 2;
+  ctx.fillStyle = "crimson";
+  ctx.beginPath();
+  ctx.arc(food[0], food[1], size / 2, 0, 2 * Math.PI);
+  ctx.stroke();
+  ctx.fill();
+}
+
+const draw = () => {
+  ctx.clearRect(0, 0, cvsWidth, cvsHeight);
+  drawSnake();
+  drawFood();
+
+  let oldHeadX = snake[0][0],
+      oldHeadY = snake[0][1];
   
+  if( d == "a") oldHeadX -= size;
+  if( d == "w") oldHeadY -= size;
+  if( d == "d") oldHeadX += size;
+  if( d == "s") oldHeadY += size;
+
+  checkState([oldHeadX, oldHeadY]);
+  snake.unshift([oldHeadX, oldHeadY])
+
 }
 
 const startGame = () => {
 
   let renderSpeed = 50 * speed;
-  const DOM = document.getElementById('main');
   if(!started){
     interval = setInterval(() => {
-      move(key);
-    }, renderSpeed)
+      draw();
+    }, 100)
     started = true;
   }
 
@@ -298,10 +266,14 @@ const toggleGameState = () => {
 
 
 options.addEventListener('click', displayOptions)
+reset.addEventListener('click',async () => {
+  resetGame();
+  await sleep(500);
+  startGame();
+})
+toggle.addEventListener('click', toggleGameState);
 exitOptionsMenu.addEventListener('click', () => document.querySelector('.options-menu').classList.add('hidden'))
 
-
-
-
 //Called one time to display initial game state
-setup()
+fix_dpi();
+draw();
