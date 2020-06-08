@@ -51,7 +51,7 @@ button:hover{
 }
 
 #snake-logo{
-  max-width: 7vw;
+  max-width: 4vw;
   display:block;
   margin:auto;
 }
@@ -87,7 +87,7 @@ button:hover{
 
 .tag{
   margin: 1.5vw;
-  font-size: 1vw;
+  font-size: 0.8vw;
   font-family: 'Press Start 2P', cursive;
 }
 
@@ -182,5 +182,22 @@ button:hover{
   90% {
     -webkit-transform: rotate(2deg);
             transform: rotate(2deg);
+  }
+}
+
+
+/* Responsive */
+@media only screen and (max-width: 1300px){
+
+  h1{
+    font-size: 2vw;
+  }
+
+  .tag{
+    font-size: 1vw;
+  }
+
+  #snake-logo{
+    max-width: 10vw;
   }
 }

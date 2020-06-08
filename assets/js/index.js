@@ -1,6 +1,7 @@
 window.onload = () => {
 
   document.getElementById('max-score').innerText = localStorage.getItem('maxScore') || 0;
+  document.getElementById('speed').innerText = speed;
   setInterval(() => {
     document.getElementById('snake-logo').classList.toggle('shake-bottom')
   }, 3000)
@@ -10,23 +11,40 @@ window.onload = () => {
 
     switch (e.code){
       case 'NumpadAdd':
-        if (speed >= 1) speed -= 0.5
+        if (speed < 10) speed += 1
         else alert("Speed can't go higher than that")
+        document.getElementById('speed').innerText = speed;
+        new Howl({
+          src: ['assets/sounds/click.mp3']
+        }).play();
         break;
       case 'NumpadSubtract':
-        if (speed <= 10) speed += 0.5
+        if (speed > 1) speed -= 1
         else alert("Speed can't go lower than that")
+        document.getElementById('speed').innerText = speed;
+        new Howl({
+          src: ['assets/sounds/click.mp3']
+        }).play();
         break;
       case 'KeyP':
         displayOptions();
+        new Howl({
+          src: ['assets/sounds/click.mp3']
+        }).play();
         break;
       case 'Enter':
         resetGame();
         await sleep(500)
         startGame();
+        new Howl({
+          src: ['assets/sounds/click.mp3']
+        }).play();
         break;
       case 'Space':
         toggleGameState();
+        new Howl({
+          src: ['assets/sounds/click.mp3']
+        }).play();
         break;
       case 'KeyW':
         if(d !== 's') changeDirection('w');
@@ -36,24 +54,45 @@ window.onload = () => {
         break;
       case 'KeyS':
         if(d !== 'w') changeDirection('s');
+        new Howl({
+          src: ['assets/sounds/down.mp3']
+        }).play();
         break;
       case 'KeyD':
         if(d !== 'a') changeDirection('d');
+        new Howl({
+          src: ['assets/sounds/righ.mp3']
+        }).play();
         break;
       case 'KeyA':
         if(d !== 'd') changeDirection('a');
+        new Howl({
+          src: ['assets/sounds/left.mp3']
+        }).play();
         break;
       case 'ArrowUp':
         if(d !== 's') changeDirection('w');
+        new Howl({
+          src: ['assets/sounds/up.mp3']
+        }).play();
         break;
       case 'ArrowDown':
         if(d !== 'w') changeDirection('s');
+        new Howl({
+          src: ['assets/sounds/down.mp3']
+        }).play();
         break;
       case 'ArrowRight':
         if(d !== 'a') changeDirection('d');
+        new Howl({
+          src: ['assets/sounds/right.mp3']
+        }).play();
         break;
       case 'ArrowLeft':
         if(d !== 'd') changeDirection('a');
+        new Howl({
+          src: ['assets/sounds/left.mp3']
+        }).play();
         break;
       default:
         console.log(e.code);
@@ -74,18 +113,14 @@ const ctx             = cvs.getContext('2d');
 
 // #region Initial Game Settings
 
-let orientation = 'x';
-let parts       = 10;
-let speed       = 1.5;
+let speed       = 5;
 let cvsWidth    = cvs.getBoundingClientRect().width;
 let cvsHeight   = cvs.getBoundingClientRect().height;
 let posX        = cvsWidth / 2;
 let posY        = cvsHeight / 2;
-let size        = (cvsWidth < 700)? 0.2 * cvsWidth : 0.02 * cvsWidth;
+let size        = (cvsWidth < 700)? 0.05 * cvsWidth : 0.02 * cvsWidth;
 let snake       = [];
 let d         = 'd';
-let xChange     = 10;
-let yChange     = 0;
 let started     = false;
 let food        = [Math.random()*cvsWidth*0.8 , Math.random()*cvsHeight*0.8]
 let score       = 0;
@@ -106,14 +141,10 @@ const displayOptions = () => {
 
 const resetGame = () => {
   if(started){
-    orientation = 'x';
-    parts       = 10;
-    speed       = 1.5;
+    speed       = 5;
     snake       = [];
     score       = 0;
     d         = 'd';
-    xChange     = 10;
-    yChange     = 0;
     started     = false;
     food        = [Math.random()*cvsWidth*0.8 , Math.random()*cvsHeight*0.8]
     snake.push([posX, posY])
@@ -167,11 +198,15 @@ const eatFood = point => {
 const checkState =async newPoint => {
   if(hitWall(newPoint) || eatSelf(newPoint)){
     clearInterval(interval)
-    alert('You Lost')
     document.getElementById('normal-score').innerText = 0
     if(score > maxScore){
       localStorage.setItem('maxScore', score);
     }
+    new Howl({
+      src: ['assets/sounds/dead.mp3']
+    }).play();
+    alert('You Lost')
+    resetGame();
   }
   if(eatFood(newPoint)){
     score++;
@@ -180,7 +215,9 @@ const checkState =async newPoint => {
     }
     food = [Math.random()*cvsWidth*0.8 , Math.random()*cvsHeight*0.8]
     document.getElementById('normal-score').innerText = score;
-    console.log(score)
+    new Howl({
+      src: ['assets/sounds/eat.mp3']
+    }).play();
   }
   else{
     snake.pop();
@@ -241,12 +278,13 @@ const draw = () => {
 }
 
 const startGame = () => {
-
-  let renderSpeed = 50 * speed;
+  let oldRange = 10 - 1,
+      newRange = 300 - 50;
+  let renderSpeed = (((11-speed) - 1) * newRange / oldRange) + 50;
   if(!started){
     interval = setInterval(() => {
       draw();
-    }, 100)
+    }, renderSpeed)
     started = true;
   }
 
