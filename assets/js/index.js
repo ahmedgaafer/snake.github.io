@@ -1,6 +1,6 @@
 window.onload = () => {
 
-  document.getElementById('max-score').innerText = localStorage.getItem('snake-score-max') || 0;
+  document.getElementById('max-score').innerText = localStorage.getItem('maxScore') || 0;
   setInterval(() => {
     document.getElementById('snake-logo').classList.toggle('shake-bottom')
   }, 3000)
@@ -31,7 +31,7 @@ window.onload = () => {
       case 'KeyW':
         if(d !== 's') changeDirection('w');
         new Howl({
-          src: ['../sounds/up.mp3']
+          src: ['assets/sounds/up.mp3']
         }).play();
         break;
       case 'KeyS':
